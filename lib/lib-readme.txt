@@ -2,7 +2,7 @@
                             Library Folder
                           ==================
 
-This folder contains jar files of libraries used by Chordalysis:
+This folder contains jar files of libraries used by DataGeneratorBN:
 
 -----------------------------------
 commons-math3-3.5.jar (version 3.5)

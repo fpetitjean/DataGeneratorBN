@@ -1,7 +1,6 @@
 package generator;
 
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,13 +12,8 @@ import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-import java.util.TreeSet;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -27,10 +21,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.FastMath;
 import org.eclipse.recommenders.jayes.BayesNet;
 import org.eclipse.recommenders.jayes.BayesNode;
-import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeAlgorithm;
-import org.eclipse.recommenders.jayes.inference.jtree.JunctionTreeBuilder;
 import org.eclipse.recommenders.jayes.util.BayesNodeUtil;
-import org.eclipse.recommenders.jayes.util.triangulation.MinFillIn;
 
 public class RandomStructureGenerator {
 
@@ -46,7 +37,15 @@ public class RandomStructureGenerator {
 	//eliminationOrdering
 	int[]eo;
 	
-
+	/**
+	 * Creates the generator
+	 * @param nVariables number of nodes in the BN
+	 * @param maxNParents Maximum number of parents per nodes - sampled from U(0,maxNParents) 
+	 * @param maxNValuesPerNode Maximum number of outcome per nodes - sampled from U(2,maxNValuesPerNode)
+	 * @param nDataPoints Number of samples to generate
+	 * @param alphaDirichlet will sample each multinomial in the CPT (ie line) from Dir(alphaDirichlet) 
+	 * @param seed Seed to pass to one of the random generator
+	 */
 	public RandomStructureGenerator(int nVariables, int maxNParents,int maxNValuesPerNode,int nDataPoints, double alphaDirichlet, long seed) {
 		this.nVariables = nVariables;
 		this.nDataPoints = nDataPoints;
@@ -211,7 +210,6 @@ public class RandomStructureGenerator {
 		out.println();
 		out.println("@data");
 		out.println();
-		long start = System.currentTimeMillis();
 		HashMap<BayesNode, String> evidence = new HashMap<>();
 		for (int i = 0; i < nDataPoints; i++) {
 			String str = "";
@@ -223,11 +221,7 @@ public class RandomStructureGenerator {
 				double sumProba = probas[chosenValue];
 				while (rand > sumProba) {
 					chosenValue++;
-					if (chosenValue >= probas.length) {
-						System.err.println(Arrays.toString(probas));
-						System.err.println(sumProba);
-						System.err.println(rand);
-					}
+					assert(chosenValue<probas.length);
 					sumProba += probas[chosenValue];
 				}
 				String outcome = n.getOutcomeName(chosenValue);

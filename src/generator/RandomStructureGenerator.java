@@ -11,7 +11,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class RandomStructureGenerator {
 	 * @param maxNParents Maximum number of parents per nodes - sampled from U(0,maxNParents) 
 	 * @param maxNValuesPerNode Maximum number of outcome per nodes - sampled from U(2,maxNValuesPerNode)
 	 * @param nDataPoints Number of samples to generate
-	 * @param alphaDirichlet will sample each multinomial in the CPT (ie line) from Dir(alphaDirichlet) 
+	 * @param alphaDirichlet will sample each multinomial in the CPT (ie line) from Dir(alphaDirichlet). The highest value of alpha, the harder it will be to detect the correlations. 
 	 * @param seed Seed to pass to one of the random generator
 	 */
 	public RandomStructureGenerator(int nVariables, int maxNParents,int maxNValuesPerNode,int nDataPoints, double alphaDirichlet, long seed) {

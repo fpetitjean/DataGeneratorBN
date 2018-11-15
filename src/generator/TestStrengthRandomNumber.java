@@ -2,6 +2,7 @@ package generator;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
@@ -9,64 +10,54 @@ import org.apache.commons.math3.stat.inference.ChiSquareTest;
 public class TestStrengthRandomNumber {
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
-//		Generating data from 2 boolean variables then checking correlation
-		
-		final int N = 10000;
-		int N_EXP = 100000;
-		
+//		Generating data from 2 boolean variable then checking if passes independence test
+
+		final int N = 100;
+		int N_EXP = 1000000;
+
 		System.out.println("Mersenne Twister");
 		MersenneTwister rand = new MersenneTwister();
 		int nErrors = 0;
+		ChiSquareTest test = new ChiSquareTest();
+		double[] expected = new double[] { N / 4.0, N / 4.0 , N / 4.0, N / 4.0  };
+		long[] observed = new long[4];// A x B
 		for (int e = 0; e < N_EXP; e++) {
-			
-			long[][] contingency = new long[2][2];//A x B
-			
+
+			Arrays.fill(observed, 0);
 			for (int i = 0; i < N; i++) {
-				int A = (rand.nextBoolean())?1:0;
-				int B = (rand.nextBoolean())?1:0;
-				contingency[A][B]++;
-				
+				int A = (rand.nextBoolean()) ? 1 : 0;
+				int B = (rand.nextBoolean()) ? 1 : 0;
+				observed[A*2+B]++;
 			}
-			
-//			for (int i = 0; i < contingency.length; i++) {
-//				for (int j = 0; j < contingency[i].length; j++) {
-//					System.out.print(contingency[i][j]+"\t");
-//				}
-//				System.out.println();
-//			}
-//			
-			ChiSquareTest test = new ChiSquareTest();
-			double p  = test.chiSquareTest(contingency);
+
+			double p = test.chiSquareTest(expected, observed);
 //			System.out.println("p = "+p);
-			if(p<=.05) {
-				nErrors ++;
+			if (p <= .05) {
+				nErrors++;
 			}
 		}
-		double fwer = 1.0*nErrors/N_EXP;
-		System.out.println("FWER= "+fwer);
-		
+		double fwer = 1.0 * nErrors / N_EXP;
+		System.out.println("FWER= " + fwer);
+
 		System.out.println("SHA1PRNG");
-		SecureRandom secureRandomGenerator = SecureRandom.getInstance("SHA1PRNG");
+		SecureRandom srg = SecureRandom.getInstance("SHA1PRNG");
 		nErrors = 0;
 		for (int e = 0; e < N_EXP; e++) {
-			
-			long[][] contingency = new long[2][2];//A x B
-			
+
+			Arrays.fill(observed, 0);
 			for (int i = 0; i < N; i++) {
-				int A = (secureRandomGenerator.nextBoolean())?1:0;
-				int B = (secureRandomGenerator.nextBoolean())?1:0;
-				contingency[A][B]++;
-				
+				int A = (srg.nextBoolean()) ? 1 : 0;
+				int B = (srg.nextBoolean()) ? 1 : 0;
+				observed[A*2+B]++;
 			}
-			
-			ChiSquareTest test = new ChiSquareTest();
-			double p  = test.chiSquareTest(contingency);
-			if(p<=.05) {
-				nErrors ++;
+
+			double p = test.chiSquareTest(expected, observed);
+			if (p <= .05) {
+				nErrors++;
 			}
 		}
-		fwer = 1.0*nErrors/N_EXP;
-		System.out.println("FWER= "+fwer);
+		fwer = 1.0 * nErrors / N_EXP;
+		System.out.println("FWER= " + fwer);
 
 	}
 
